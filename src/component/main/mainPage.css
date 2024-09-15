@@ -1,0 +1,24 @@
+:root {
+  /* ### Primary */
+
+  --Purple: hsl(259, 100%, 65%);
+  --Light-red: hsl(0, 100%, 67%);
+
+  /* ### Neutral */
+
+  --White: hsl(0, 0%, 100%);
+  --Off-white: hsl(0, 0%, 94%);
+  --Light-grey: hsl(0, 0%, 86%);
+  --Smokey-grey: hsl(0, 1%, 44%);
+  --Off-black: hsl(0, 0%, 8%);
+}
+
+.wrapper {
+  min-width: 360px;
+  max-width: 800px;
+  background-color: var(--White);
+  margin: 6%;
+  padding: 40px 40px;
+  border-radius: 25px 25px 100px 25px;
+}
+
