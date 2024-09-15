@@ -1,4 +1,4 @@
-import React, {useReducer, useRef} from "react";
+import React, { useReducer, useRef } from "react";
 import "./form-age.css";
 import ArrowIcon from "../../assets/images/icon-arrow.svg";
 import Input from "../input/Input";
@@ -62,11 +62,9 @@ function FormAge({ setBirthDate, birthDate, handleClick, setGetAge }) {
 
     if (inputDate > currentDate) {
       yearInputRef.current.setCustomValidity("futureYearValidation");
-      yearInputRef.current.select();
       dispatch({ type: "patternMismatch", payload: yearInputRef.current.name });
-      
     }
-    return inputDate <= currentDate
+    return inputDate <= currentDate;
   }
 
   function handleChange(e) {
@@ -85,10 +83,12 @@ function FormAge({ setBirthDate, birthDate, handleClick, setGetAge }) {
         case "day":
           e.preventDefault();
           monthInputRef.current.focus();
+          // monthInputRef.current.select()
           break;
         case "month":
           e.preventDefault();
           yearInputRef.current.focus();
+          // yearInputRef.current.select();
           break;
         case "year":
           e.preventDefault();
@@ -107,9 +107,15 @@ function FormAge({ setBirthDate, birthDate, handleClick, setGetAge }) {
     if (!isDayOfMonthValidate(birthDate)) {
       dayInputRef.current.setCustomValidity("month last date error");
       dispatch({ type: "patternMismatch", payload: dayInputRef.current.name });
-      console.log(true);
     }
-    fieldValidation() && futureValidation() && handleClick();
+    // fieldValidation() && futureValidation() && handleClick();
+    if (fieldValidation() && futureValidation()) {
+      handleClick();
+      dayInputRef.current.select();
+      dayInputRef.current.focus();
+    } else {
+      yearInputRef.current.select();
+    }
   }
 
   return (
@@ -175,4 +181,3 @@ function FormAge({ setBirthDate, birthDate, handleClick, setGetAge }) {
 }
 
 export default FormAge;
-
