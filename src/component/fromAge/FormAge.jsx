@@ -2,98 +2,55 @@ import React, { useReducer, useRef } from "react";
 import "./form-age.css";
 import ArrowIcon from "../../assets/images/icon-arrow.svg";
 import Input from "../input/Input";
+import { get, useForm } from "react-hook-form";
 
-function reducer(state, action) {
-  switch (action.type) {
-    case "default":
-      return {
-        ...state,
-        [action.payload]: "This felids is required",
-      };
-    case "patternMismatch":
-      return {
-        ...state,
-        [action.payload]: `Must be a valid ${action.payload}`,
-      };
-
-    default:
-      state;
-  }
-}
-
-function FormAge({ setBirthDate, birthDate, handleClick, setGetAge }) {
-  const dayInputRef = useRef();
-  const monthInputRef = useRef();
-  const yearInputRef = useRef();
-  const submitRef = useRef();
-
-  const [errorMessage, dispatch] = useReducer(reducer, {
-    day: "",
-    month: "",
-    year: "",
+function FormAge({ setBirthDate }) {
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+    getValues,
+    setFocus,
+  } = useForm({
+    defaultValues: { day: "", month: "", year: "" },
+    mode: "onBlur",
   });
 
-  function isDayOfMonthValidate(date) {
-    const totalDayOfMonth = new Date(date.year, date.month, 0).getDate();
+  const onSubmit = (data) => {
+    console.log(data);
+    
+    setBirthDate(data);
+  };
 
-    return totalDayOfMonth >= birthDate.day;
+  function lastDayOfMonth(day) {
+    const inputMonth = getValues().month;
+    const inputYear = getValues().year;
+    const totalDayOfMonth = new Date(inputYear, inputMonth, 0).getDate();
+    console.log(totalDayOfMonth >= day);
+
+    return totalDayOfMonth >= day;
   }
 
-  function fieldValidation() {
-    const inputsArr = [dayInputRef, monthInputRef, yearInputRef];
-    let isValid = (input) => input.current.validity.valid;
-
-    //emptyFieldValidation
-    inputsArr.forEach((ref) => {
-      if (ref.current.value.trim() === "") {
-        console.log(ref.current.validity.valid, ref.current.validity.id);
-        ref.current.setCustomValidity("empty field");
-        dispatch({ type: "default", payload: ref.current.name });
-      }
-    });
-    return inputsArr.every(isValid);
-  }
-
-  function futureValidation() {
+  function futureValidation(year) {
     const currentDate = new Date();
     const inputDate = new Date(
-      `${birthDate.year}-${birthDate.month}-${birthDate.day}`
+      `${year}-${getValues().month}-${getValues().day}`
     );
 
-    if (inputDate > currentDate) {
-      yearInputRef.current.setCustomValidity("futureYearValidation");
-      dispatch({ type: "patternMismatch", payload: yearInputRef.current.name });
-    }
     return inputDate <= currentDate;
   }
 
-  function handleChange(e) {
-    setBirthDate((prev) => ({ ...prev, [e.target.id]: e.target.value }));
-  }
-
-  function handleBlur(e) {
-    e.target.validity.patternMismatch
-      ? dispatch({ type: "patternMismatch", payload: e.target.name })
-      : e.target.setCustomValidity("");
-  }
-
-  function handleEnterFromSubmitting(e) {
+  function handleEnter(e) {
     if (e.keyCode === 13) {
-      switch (e.target.name) {
+      switch (e.target.id) {
         case "day":
           e.preventDefault();
-          monthInputRef.current.focus();
-          // monthInputRef.current.select()
+          setFocus("month");
           break;
-        case "month":
+          case "month":
           e.preventDefault();
-          yearInputRef.current.focus();
-          // yearInputRef.current.select();
-          break;
-        case "year":
-          e.preventDefault();
-          submitRef.current.focus();
-          handleSubmit();
+          setFocus("year");
           break;
         default:
           break;
@@ -101,27 +58,80 @@ function FormAge({ setBirthDate, birthDate, handleClick, setGetAge }) {
     }
   }
 
-  function handleSubmit(e) {
-    setGetAge({ day: "--", month: "--", year: "--" }); //set previous displayed value to "--"
-
-    if (!isDayOfMonthValidate(birthDate)) {
-      dayInputRef.current.setCustomValidity("month last date error");
-      dispatch({ type: "patternMismatch", payload: dayInputRef.current.name });
-    }
-    // fieldValidation() && futureValidation() && handleClick();
-    if (fieldValidation() && futureValidation()) {
-      handleClick();
-      dayInputRef.current.select();
-      dayInputRef.current.focus();
-    } else {
-      yearInputRef.current.select();
-    }
-  }
-
   return (
-    <form onSubmit={(e) => e.preventDefault()} noValidate>
+    <form onSubmit={handleSubmit(onSubmit)} noValidate>
       <div className="form-container">
-        <Input
+        <div>
+          <label htmlFor="day">day</label>
+          <input
+            type="text"
+            id="day"
+            maxLength={2}
+            placeholder="DD"
+            autoFocus
+            onKeyDown={(e) => handleEnter(e)}
+            {...register("day", {
+              required: { value: true, message: "This field is required" },
+              pattern: {
+                value: /^(0?[1-9]|[12][0-9]|3[01])$/,
+                message: "Must be a valid Day",
+              },
+              validate: (day) => lastDayOfMonth(day) || "Must be a valid Date",
+            })}
+          />
+          {errors.day && <span>{errors.day.message}</span>}
+        </div>
+        <div>
+          <label htmlFor="month">month</label>
+          <input
+            type="text"
+            id="month"
+            maxLength={2}
+            placeholder="MM"
+            onKeyDown={(e) => handleEnter(e)}
+            {...register("month", {
+              required: { value: true, message: "This field is required" },
+              pattern: {
+                value: /^(0?[1-9]|1[0-2])$/,
+                message: "Must be a valid Month",
+              },
+            })}
+          />
+          {errors.month && <span>{errors.month.message}</span>}
+        </div>
+        <div>
+          <label htmlFor="year">year</label>
+          <input
+            type="text"
+            id="year"
+            maxLength={4}
+            placeholder="YYYY"
+            onKeyDown={(e) => handleEnter(e)}
+            {...register("year", {
+              required: { value: true, message: "This field is required" },
+              pattern: { value: /^\d{4}$/, message: "Must be a valid Year" },
+              validate: (year) =>
+                futureValidation(year) || "Must be in the past",
+            })}
+          />
+          {errors.year && <span>{errors.year.message}</span>}
+        </div>
+      </div>
+
+      <div className="button">
+        <button id="submitBtn" type="submit">
+          <img src={ArrowIcon} alt="" />
+        </button>
+        <hr />
+      </div>
+    </form>
+  );
+}
+
+export default FormAge;
+
+{
+  /* <Input
           label="Day"
           id="day"
           name="day"
@@ -163,21 +173,5 @@ function FormAge({ setBirthDate, birthDate, handleClick, setGetAge }) {
           handleBlur={handleBlur}
           errorMessage={errorMessage.year}
           inputRef={yearInputRef}
-        />
-      </div>
-      <div className="button">
-        <button
-          ref={submitRef}
-          id="submitBtn"
-          type="submit"
-          onClick={(e) => handleSubmit(e)}
-        >
-          <img src={ArrowIcon} alt="" />
-        </button>
-        <hr />
-      </div>
-    </form>
-  );
+        /> */
 }
-
-export default FormAge;

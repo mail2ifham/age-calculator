@@ -1,7 +1,7 @@
 import React from "react";
 import "./display-age.css";
 
-function DisplayAge({ getAge }) {
+function DisplayAge({ getAge ={day:'--',month:'--',year:'--'}}) {
   return (
     <div className="display-container">
       {" "}

@@ -33,9 +33,16 @@ function useAge({}) {
 
   year = currentYear - value.year;
 
-  const age = { year, month, day };
+  const age = { year, month, day }; // combining to obj
 
-  return [value, setValue, age];
+  for (const key in value) {  // if 
+    if (value[key] === "") {
+      return [setValue];
+    } else {
+      return [setValue,age];
+    }
+  }
+
 }
 
 export default useAge;

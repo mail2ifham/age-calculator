@@ -34,7 +34,7 @@ form .form-container div input {
 }
 
 
-form .form-container div input:is(:hover, :focus) {
+form .form-container input:is(:hover, :focus) {
   border: 2px solid var(--Off-black);
 }
 
@@ -89,21 +89,16 @@ hr {
 form .button button img:hover {
   background-color: var(--Off-black);
 }
-
 .form-container div > span {
-  display: none;
-  font-size: 0.8rem;
-}
-
-input:user-invalid ~ span {
   font-size: .8rem;
-  display: block;
   color: var(--Light-red);
 }
-.form-container div input:user-invalid {
+
+
+form .form-container div:has(span) input {
   border: 2px solid var(--Light-red);
 }
-.form-container div:has(input:user-invalid) > label {
+.form-container div:has(span) > label {
   color: var(--Light-red);
 }
 
