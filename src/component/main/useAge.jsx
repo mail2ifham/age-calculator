@@ -35,7 +35,7 @@ function useAge({}) {
 
   const age = { year, month, day }; // combining to obj
 
-  for (const key in value) {  // if 
+  for (const key in value) {  
     if (value[key] === "") {
       return [setValue];
     } else {

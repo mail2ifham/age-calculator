@@ -1,14 +1,12 @@
-import React, { useReducer, useRef } from "react";
+import React from "react";
 import "./form-age.css";
 import ArrowIcon from "../../assets/images/icon-arrow.svg";
-import Input from "../input/Input";
 import { get, useForm } from "react-hook-form";
 
 function FormAge({ setBirthDate }) {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
     getValues,
     setFocus,
@@ -19,7 +17,7 @@ function FormAge({ setBirthDate }) {
 
   const onSubmit = (data) => {
     console.log(data);
-    
+
     setBirthDate(data);
   };
 
